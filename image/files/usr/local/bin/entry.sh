@@ -29,6 +29,8 @@ via mqtt.
 
  General Configs:
   -d, --delay INT            Number of Minutes between two speed tests (Default: 10) 
+                             currently not fixed time because time of the speedtest 
+                             and publishing add to the DELAY
 
  Processing options:
   -c, --mqtt-config FILE     Uses the given CONFIG for the mqtt setup.
@@ -98,25 +100,14 @@ MQTT config:     ${MQTT_CONFIG}
 cat ${MQTT_CONFIG}
 
 ###############################################################################
-# finish setup activating cron job
+# finish setup activating speedtest
 ###############################################################################
-echo "Activating cron job"
-#write out current crontab
-crontab -l > mycron
-#echo new cron into cron file
-MINUTES=(${DELAY}%60)
-echo ${MINUTES}
-HOURS=(${HOURS}/60)
-#echo "${MINUTES} ${HOURS} * * * ./usr/local/bin/speedtest.sh" >> mycron
-echo "10 * * * * ./usr/local/bin/speedtest.sh" >> mycron
-#install new cron file
-cat mycron
-crontab mycron
-rm mycron
-tail -f /var/log/syslog | grep CRON
-
-echo "Done"
 
 while true 
-    do sleep 100 
+do 
+    sleep ${DELAY}
+    #perform speedtest
+
+    #publish via mqtt
+
 done
