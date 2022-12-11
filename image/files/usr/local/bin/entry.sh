@@ -4,7 +4,7 @@
 # declare constants for easier later changes
 ###############################################################################
 
-readonly MQTT_DNS="NAS-GW4.fritz.box"
+readonly MQTT_DNS="192.168.178.114"
 readonly MQTT_PORT=1883
 
 
@@ -13,7 +13,7 @@ readonly MQTT_PORT=1883
 ###############################################################################
 
 DELAY=10
-MQTT_CONFIG='/usr/local/bin/speedtest.sh'
+MQTT_CONFIG='/mqtt/topic/description'
 
 ###############################################################################
 # display usage information
@@ -97,17 +97,39 @@ Delay:           ${DELAY}
 
 MQTT config:     ${MQTT_CONFIG}
 "
-cat ${MQTT_CONFIG}
 
 ###############################################################################
 # finish setup activating speedtest
 ###############################################################################
 
+DELAY=$(( $DELAY*60 ))
+echo $DELAY
+
 while true 
 do 
-    sleep ${DELAY}
     #perform speedtest
+    #speedtest --progress=yes -A -f json
+    speedtest --accept-license --accept-gdpr -A -f json >> speedtest.json
+
+    #cat speedtest.json
 
     #publish via mqtt
+    JITTER=echo jq .ping.jitter speedtest.json
+    LATENCY=echo jq .ping.latency speedtest.json
+    LOW=echo jq .ping.low speedtest.json
+    HIGH=echo jq .ping.high speedtest.json
+
+    #echo "$JITTER $LATENCY $LOW $HIGH"
+
+    mosquitto_pub -h $MQTT_DNS:$MQTT_PORT -t speedtest/ping/jitter -m "$JITTER"
+    sleep 1
+    mosquitto_pub -h $MQTT_DNS:$MQTT_PORT -t speedtest/ping/latency -m "$LATENCY"
+    sleep 1
+    mosquitto_pub -h $MQTT_DNS:$MQTT_PORT -t speedtest/ping/low -m "$LOW"
+    sleep 1
+    mosquitto_pub -h $MQTT_DNS:$MQTT_PORT -t speedtest/ping/high -m "$HIGH"
+
+
+    sleep ${DELAY}
 
 done
