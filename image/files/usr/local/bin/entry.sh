@@ -4,7 +4,7 @@
 # declare constants for easier later changes
 ###############################################################################
 
-readonly MQTT_DNS="192.168.178.114"
+readonly MQTT_DNS=192.168.178.114
 readonly MQTT_PORT=1883
 
 
@@ -114,20 +114,21 @@ do
     #cat speedtest.json
 
     #publish via mqtt
-    JITTER=echo jq .ping.jitter speedtest.json
-    LATENCY=echo jq .ping.latency speedtest.json
-    LOW=echo jq .ping.low speedtest.json
-    HIGH=echo jq .ping.high speedtest.json
+    
+    JITTER=$(jq .ping.jitter speedtest.json)    
+    LATENCY=$(jq .ping.latency speedtest.json)    
+    LOW=$(jq .ping.low speedtest.json)    
+    HIGH=$(jq .ping.high speedtest.json)
 
-    #echo "$JITTER $LATENCY $LOW $HIGH"
+    echo "$JITTER $LATENCY $LOW $HIGH"
 
-    mosquitto_pub -h $MQTT_DNS:$MQTT_PORT -t speedtest/ping/jitter -m "$JITTER"
+    mosquitto_pub -h $MQTT_DNS -m "$JITTER" -t speedtest/ping/jitter 
     sleep 1
-    mosquitto_pub -h $MQTT_DNS:$MQTT_PORT -t speedtest/ping/latency -m "$LATENCY"
+    mosquitto_pub -h $MQTT_DNS -m "$LATENCY" -t speedtest/ping/latency  
     sleep 1
-    mosquitto_pub -h $MQTT_DNS:$MQTT_PORT -t speedtest/ping/low -m "$LOW"
+    mosquitto_pub -h $MQTT_DNS -m "$LOW" -t speedtest/ping/low 
     sleep 1
-    mosquitto_pub -h $MQTT_DNS:$MQTT_PORT -t speedtest/ping/high -m "$HIGH"
+    mosquitto_pub -h $MQTT_DNS -m "$HIGH" -t speedtest/ping/high 
 
 
     sleep ${DELAY}
