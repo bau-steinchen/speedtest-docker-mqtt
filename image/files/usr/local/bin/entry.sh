@@ -109,19 +109,20 @@ while true
 do 
     #perform speedtest
     #speedtest --progress=yes -A -f json
+    #speedtest --help
     speedtest --accept-license --accept-gdpr -A -f json >> speedtest.json
 
-    #cat speedtest.json
+    # cat speedtest.json
 
-    #publish via mqtt
-    
+    # extract ping values from json
     JITTER=$(jq .ping.jitter speedtest.json)    
     LATENCY=$(jq .ping.latency speedtest.json)    
     LOW=$(jq .ping.low speedtest.json)    
     HIGH=$(jq .ping.high speedtest.json)
 
-    echo "$JITTER $LATENCY $LOW $HIGH"
+    # echo "$JITTER $LATENCY $LOW $HIGH"
 
+    # publish values via mqtt
     mosquitto_pub -h $MQTT_DNS -m "$JITTER" -t speedtest/ping/jitter 
     sleep 1
     mosquitto_pub -h $MQTT_DNS -m "$LATENCY" -t speedtest/ping/latency  
@@ -130,6 +131,48 @@ do
     sleep 1
     mosquitto_pub -h $MQTT_DNS -m "$HIGH" -t speedtest/ping/high 
 
+    # extract download values from json
+    BANDWIDTH=$(jq .download.bandwidth speedtest.json)    
+    BYTES=$(jq .download.bytes speedtest.json)    
+    ELAPSED=$(jq .download.elapsed speedtest.json)    
+
+    # echo "$BANDWIDTH $BYTES $ELAPSED"
+
+    # publish values via mqtt
+    mosquitto_pub -h $MQTT_DNS -m "$BANDWIDTH" -t speedtest/download/bandwidth 
+    sleep 1
+    mosquitto_pub -h $MQTT_DNS -m "$BYTES" -t speedtest/download/bytes  
+    sleep 1
+    mosquitto_pub -h $MQTT_DNS -m "$ELAPSED" -t speedtest/download/elapsed 
+
+
+    # extract upload values from json
+    BANDWIDTH=$(jq .upload.bandwidth speedtest.json)    
+    BYTES=$(jq .upload.bytes speedtest.json)    
+    ELAPSED=$(jq .upload.elapsed speedtest.json)    
+
+    # echo "$BANDWIDTH $BYTES $ELAPSED"
+
+    # publish values via mqtt
+    mosquitto_pub -h $MQTT_DNS -m "$BANDWIDTH" -t speedtest/upload/bandwidth 
+    sleep 1
+    mosquitto_pub -h $MQTT_DNS -m "$BYTES" -t speedtest/upload/bytes  
+    sleep 1
+    mosquitto_pub -h $MQTT_DNS -m "$ELAPSED" -t speedtest/upload/elapsed 
+
+
+    # extract general data from json
+    PACKETLOSS=$(jq .packetLoss speedtest.json) 
+    TYPE=$(jq .type speedtest.json)
+    TIMESTAMP=$(jq .timestamp speedtest.json)
+    mosquitto_pub -h $MQTT_DNS -m "$PACKETLOSS" -t speedtest/general/packetLoss
+    sleep 1
+    mosquitto_pub -h $MQTT_DNS -m "$TYPE" -t speedtest/general/type  
+    sleep 1
+    mosquitto_pub -h $MQTT_DNS -m "$TIMESTAMP" -t speedtest/general/timestamp 
+
+    # reduce delay for 30 seconds to compensate the speedtest processing time the hacky way
+    DELAY=$(( $DELAY - 30))
 
     sleep ${DELAY}
 

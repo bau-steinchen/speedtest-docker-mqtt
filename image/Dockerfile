@@ -12,4 +12,4 @@ COPY files/ /
 #defining EntryScript
 ENTRYPOINT [ "/usr/local/bin/entry.sh" ]
 # Make help the default if no arguments are given
-CMD [ "--help" ]
+CMD [ "" ]
