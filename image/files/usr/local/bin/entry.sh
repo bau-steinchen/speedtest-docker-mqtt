@@ -120,7 +120,7 @@ do
     LOW=$(jq .ping.low speedtest.json)    
     HIGH=$(jq .ping.high speedtest.json)
 
-    # echo "$JITTER $LATENCY $LOW $HIGH"
+    #echo "$JITTER $LATENCY $LOW $HIGH"
 
     # publish values via mqtt
     mosquitto_pub -h $MQTT_DNS -m "$JITTER" -t speedtest/ping/jitter 
@@ -174,6 +174,7 @@ do
     # reduce delay for 30 seconds to compensate the speedtest processing time the hacky way
     DELAY=$(( $DELAY - 30))
 
+    echo "sleep for ${DELAY}"
     sleep ${DELAY}
 
 done
