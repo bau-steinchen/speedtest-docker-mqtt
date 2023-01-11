@@ -103,10 +103,13 @@ MQTT config:     ${MQTT_CONFIG}
 ###############################################################################
 
 DELAY=$(( $DELAY*60 ))
+BASE_DELAY=${DELAY}
 echo $DELAY
 
 while true 
 do 
+    DELAY=${BASE_DELAY}
+
     #perform speedtest
     #speedtest --progress=yes -A -f json
     #speedtest --help
@@ -152,6 +155,8 @@ do
     ELAPSED=$(jq .upload.elapsed speedtest.json)    
 
     # echo "$BANDWIDTH $BYTES $ELAPSED"
+    BANDWIDTH= $(( ${BANDWIDTH}*0.00247875217 ))
+    echo "${BANDWIDTH}"
 
     # publish values via mqtt
     mosquitto_pub -h $MQTT_DNS -m "$BANDWIDTH" -t speedtest/upload/bandwidth 
