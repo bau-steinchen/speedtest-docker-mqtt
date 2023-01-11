@@ -155,7 +155,7 @@ do
     ELAPSED=$(jq .upload.elapsed speedtest.json)    
 
     # echo "$BANDWIDTH $BYTES $ELAPSED"
-    BANDWIDTH= $(( ${BANDWIDTH}*0.00247875217 ))
+    #BANDWIDTH= $(( ${BANDWIDTH}*0.00247875217 ))
     echo "${BANDWIDTH}"
 
     # publish values via mqtt

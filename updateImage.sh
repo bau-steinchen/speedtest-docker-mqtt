@@ -1,4 +1,4 @@
-echo "start building the backend api"
+echo "start building the speedtest image"
 docker-compose build
 
 echo "pushing image to docker hub"
