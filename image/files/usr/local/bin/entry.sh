@@ -156,7 +156,7 @@ do
 
     # echo "$BANDWIDTH $BYTES $ELAPSED"
     #BANDWIDTH= $(( ${BANDWIDTH}*0.00247875217 ))
-    echo "${BANDWIDTH}"
+    #echo "${BANDWIDTH}"
 
     # publish values via mqtt
     mosquitto_pub -h $MQTT_DNS -m "$BANDWIDTH" -t speedtest/upload/bandwidth 
